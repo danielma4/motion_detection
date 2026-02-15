@@ -172,11 +172,11 @@ def analyze_temporal_filters(frames, output_dir='output', frame_idx=25):
         col = idx + 2
         
         axes[0, col].imshow(np.abs(temporal_derivs[key][frame_idx]), cmap='hot')
-        axes[0, col].set_title(f'DoG σ={t_sigma}')
+        axes[0, col].set_title(f'DoG sigma={t_sigma}')
         axes[0, col].axis('off')
         
         axes[1, col].imshow(threshold_motion(temporal_derivs[key][frame_idx], threshold_val), cmap='gray')
-        axes[1, col].set_title(f'DoG σ={t_sigma} (Thresh)')
+        axes[1, col].set_title(f'DoG sigma={t_sigma} (Thresh)')
         axes[1, col].axis('off')
     
     axes[1, 0].axis('off')
@@ -250,7 +250,7 @@ def analyze_spatial_smoothing(frames, output_dir='output', frame_idx=25):
         col = idx
         
         axes[row, col].imshow(np.abs(results[key][frame_idx]), cmap='hot')
-        axes[row, col].set_title(f'Gaussian σ={s_sigma}')
+        axes[row, col].set_title(f'Gaussian sigma={s_sigma}')
         axes[row, col].axis('off')
     
     plt.tight_layout()
@@ -263,11 +263,11 @@ def analyze_spatial_smoothing(frames, output_dir='output', frame_idx=25):
         col = idx
         
         axes2[0, col].imshow(np.abs(results[key][frame_idx]), cmap='hot')
-        axes2[0, col].set_title(f'Gaussian σ={s_sigma}')
+        axes2[0, col].set_title(f'Gaussian sigma={s_sigma}')
         axes2[0, col].axis('off')
         
         axes2[1, col].imshow(threshold_motion(results[key][frame_idx], threshold_val), cmap='gray')
-        axes2[1, col].set_title(f'Gaussian σ={s_sigma} (Thresh)')
+        axes2[1, col].set_title(f'Gaussian sigma={s_sigma} (Thresh)')
         axes2[1, col].axis('off')
     
     plt.tight_layout()
@@ -316,12 +316,12 @@ def analyze_adaptive_threshold(frames, output_dir='output', frame_idx=25):
         col = idx + 1
         if col < 4:
             axes[0, col].imshow(motion_mask, cmap='gray')
-            axes[0, col].set_title(f'Threshold = {mult}σ ({threshold_val:.1f})')
+            axes[0, col].set_title(f'Threshold = {mult}, sigma ({threshold_val:.1f})')
             axes[0, col].axis('off')
             
             overlay = overlay_mask_on_frame(frames[frame_idx], motion_mask)
             axes[1, col].imshow(overlay)
-            axes[1, col].set_title(f'{mult}σ Overlay')
+            axes[1, col].set_title(f'{mult}, sigma Overlay')
             axes[1, col].axis('off')
     
     plt.tight_layout()
@@ -332,11 +332,11 @@ def analyze_adaptive_threshold(frames, output_dir='output', frame_idx=25):
     #sigma = 1: very sensitive, many false positives from noise
     #sigma = 2: balanced, captures most motion with some noise
     #sigma = 3: conservative, good motion detection with minimal false positives
-    #sigma = 4: very conservative, may miss subtle motion
     # best seems to be sigma = 3 threshold for robust motion detection
 
 
 #generate video showing motion detection over all frames
+# not sure if this is required, but it is cool nonetheless
 def generate_motion_video(frames, output_dir='output', method='adaptive', fps=10):
     #setup motion detection based on method
     if method == 'adaptive':
@@ -376,16 +376,16 @@ def generate_motion_video(frames, output_dir='output', method='adaptive', fps=10
 
 
 def main():
-    # configuration - tweak this as you see fit
-    video_dir = 'videos/EnterExitCrossingPaths2cor/EnterExitCrossingPaths2cor'
+    # configuration -- tweak this as you see fit
+    video_dir = 'videos/RedChair/RedChair'
     output_dir = 'output'
-    frame_idx = 40  #which frame to display in static images
+    frame_idx = 60  #which frame to display in static images (pro tip: pick a frame with motion)
     generate_videos = True  #set to False to skip video generation
     
     os.makedirs(output_dir, exist_ok=True)
     
     #load video frames
-    frames = load_frames(video_dir, num_frames=50)
+    frames = load_frames(video_dir, num_frames=80)
     
     #q1
     analyze_basic_pipeline(frames, output_dir, frame_idx)
@@ -396,7 +396,6 @@ def main():
     #q2 variation 3
     analyze_adaptive_threshold(frames, output_dir, frame_idx)
     
-    #generate motion videos if requested
     if generate_videos:
         video_path_basic = generate_motion_video(frames, output_dir, method='basic', fps=10)
         video_path_adaptive = generate_motion_video(frames, output_dir, method='adaptive', fps=10)
